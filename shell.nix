@@ -1,12 +1,12 @@
 let nixpkgs = <nixpkgs>; in
-with import nixpkgs {};
+with import nixpkgs {
+  config.allowUnfree = true;
+};
 stdenv.mkDerivation {
   name = "nix-shell";
   buildInputs = [
-    gnumake
-    bashInteractive
-    python3
-    jq
+    feishu
+    qq
   ];
   shellHook = ''
     export NIX_PATH=nixpkgs=${nixpkgs}

@@ -19,9 +19,12 @@ mount_suffixes = [
   "tmpfs"
 ]
 
+# changelog: 
+# / should be mount as rw, thus /nix/store thiny are root, rather than nogroup
+
 def get_default_config():
-  rw = ["."]
-  ro = ["/"]
+  rw = ["/" , ".", "/tmp/.X11-unix", "/run/user/1000/bus"]
+  ro = [] # ["/"] 
   dev = ["/dev"]
   tmpfs = [
     "/tmp",
@@ -40,6 +43,9 @@ def get_default_config():
   set_from_env("HOME", env)
   set_from_env("TERM", env)
   set_from_env("SHELL", env)
+  set_from_env("GTK_IM_MODULE", env)
+  set_from_env("QT_IM_MODULE", env)
+  set_from_env("XMODIFIERS", env)
   set_from_env("NIX_REMOTE", env)
 
   if "NIX_REMOTE" not in env:
@@ -200,6 +206,8 @@ def make_command(config):
   else:
     shell = [which(environ.get("SHELL", "bash"))]
     shell_flags = ["-c", config["arguments"]["command"]] if config["arguments"]["command"] else []
+  
+  list(map(print, [[basename(command)], mounts, env, bwrap_flags, shell, shell_flags]))
 
   return command, [basename(command)] + mounts + env + bwrap_flags + shell + shell_flags
 
@@ -256,6 +264,8 @@ def load_config(config, arguments, rest):
   for k, v in config["environment"].items():
     config["environment"][k] = expand(v)
 
+  # print(config)
+  
   return config
 
 def ensure_prerequisites(config):
@@ -287,6 +297,13 @@ def main(arguments, rest=[]):
   ensure_prerequisites(config)
 
   command, flags = make_command(config)
+  print("command")
+  print(command)
+  print("==========================================")
+  print("flags")
+  print(flags)
+  print("==========================================")
+
   stderr.write(" ".join(flags) + "\n")
   execve(command, flags, environ)
 
