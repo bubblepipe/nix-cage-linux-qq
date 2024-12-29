@@ -5,10 +5,11 @@ with import nixpkgs {
 stdenv.mkDerivation {
   name = "nix-shell";
   buildInputs = [
-    feishu
     qq
   ];
   shellHook = ''
     export NIX_PATH=nixpkgs=${nixpkgs}
+    unset TZ
+    qq
   '';
 }
