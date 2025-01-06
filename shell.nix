@@ -35,5 +35,6 @@ pkgs.mkShell
     unset TZ
     xhost +
     qq
+    exit
   '';
 }
